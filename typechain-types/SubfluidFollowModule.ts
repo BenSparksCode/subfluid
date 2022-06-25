@@ -13,19 +13,23 @@ import {
   Signer,
   utils,
 } from "ethers";
-import { FunctionFragment, Result } from "@ethersproject/abi";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
 export interface SubfluidFollowModuleInterface extends utils.Interface {
   contractName: "SubfluidFollowModule";
   functions: {
+    "DAI()": FunctionFragment;
+    "HUB()": FunctionFragment;
     "followModuleTransferHook(uint256,address,address,uint256)": FunctionFragment;
     "initializeFollowModule(uint256,bytes)": FunctionFragment;
     "isFollowing(uint256,address,uint256)": FunctionFragment;
     "processFollow(address,uint256,bytes)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "DAI", values?: undefined): string;
+  encodeFunctionData(functionFragment: "HUB", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "followModuleTransferHook",
     values: [BigNumberish, string, string, BigNumberish]
@@ -43,6 +47,8 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
     values: [string, BigNumberish, BytesLike]
   ): string;
 
+  decodeFunctionResult(functionFragment: "DAI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "HUB", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "followModuleTransferHook",
     data: BytesLike
@@ -60,8 +66,29 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
     data: BytesLike
   ): Result;
 
-  events: {};
+  events: {
+    "SubfluidFollow(address,address)": EventFragment;
+    "SubfluidFollowInitialized(uint256,uint256)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "SubfluidFollow"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SubfluidFollowInitialized"): EventFragment;
 }
+
+export type SubfluidFollowEvent = TypedEvent<
+  [string, string],
+  { follower: string; recipient: string }
+>;
+
+export type SubfluidFollowEventFilter = TypedEventFilter<SubfluidFollowEvent>;
+
+export type SubfluidFollowInitializedEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  { profileId: BigNumber; followCost: BigNumber }
+>;
+
+export type SubfluidFollowInitializedEventFilter =
+  TypedEventFilter<SubfluidFollowInitializedEvent>;
 
 export interface SubfluidFollowModule extends BaseContract {
   contractName: "SubfluidFollowModule";
@@ -91,6 +118,10 @@ export interface SubfluidFollowModule extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    DAI(overrides?: CallOverrides): Promise<[string]>;
+
+    HUB(overrides?: CallOverrides): Promise<[string]>;
+
     followModuleTransferHook(
       profileId: BigNumberish,
       from: string,
@@ -119,6 +150,10 @@ export interface SubfluidFollowModule extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  DAI(overrides?: CallOverrides): Promise<string>;
+
+  HUB(overrides?: CallOverrides): Promise<string>;
 
   followModuleTransferHook(
     profileId: BigNumberish,
@@ -149,6 +184,10 @@ export interface SubfluidFollowModule extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    DAI(overrides?: CallOverrides): Promise<string>;
+
+    HUB(overrides?: CallOverrides): Promise<string>;
+
     followModuleTransferHook(
       profileId: BigNumberish,
       from: string,
@@ -178,9 +217,31 @@ export interface SubfluidFollowModule extends BaseContract {
     ): Promise<void>;
   };
 
-  filters: {};
+  filters: {
+    "SubfluidFollow(address,address)"(
+      follower?: string | null,
+      recipient?: string | null
+    ): SubfluidFollowEventFilter;
+    SubfluidFollow(
+      follower?: string | null,
+      recipient?: string | null
+    ): SubfluidFollowEventFilter;
+
+    "SubfluidFollowInitialized(uint256,uint256)"(
+      profileId?: BigNumberish | null,
+      followCost?: null
+    ): SubfluidFollowInitializedEventFilter;
+    SubfluidFollowInitialized(
+      profileId?: BigNumberish | null,
+      followCost?: null
+    ): SubfluidFollowInitializedEventFilter;
+  };
 
   estimateGas: {
+    DAI(overrides?: CallOverrides): Promise<BigNumber>;
+
+    HUB(overrides?: CallOverrides): Promise<BigNumber>;
+
     followModuleTransferHook(
       profileId: BigNumberish,
       from: string,
@@ -211,6 +272,10 @@ export interface SubfluidFollowModule extends BaseContract {
   };
 
   populateTransaction: {
+    DAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    HUB(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     followModuleTransferHook(
       profileId: BigNumberish,
       from: string,
