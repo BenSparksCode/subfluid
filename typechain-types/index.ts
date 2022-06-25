@@ -63,6 +63,7 @@ export type { MockLensHubV2 } from "./MockLensHubV2";
 export type { MockLensHubV2BadRevision } from "./MockLensHubV2BadRevision";
 export type { MockProfileCreationProxy } from "./MockProfileCreationProxy";
 export type { MockReferenceModule } from "./MockReferenceModule";
+export type { SubfluidFollowModule } from "./SubfluidFollowModule";
 export type { FollowNFTProxy } from "./FollowNFTProxy";
 export type { TransparentUpgradeableProxy } from "./TransparentUpgradeableProxy";
 
@@ -128,5 +129,6 @@ export { MockLensHubV2__factory } from "./factories/MockLensHubV2__factory";
 export { MockLensHubV2BadRevision__factory } from "./factories/MockLensHubV2BadRevision__factory";
 export { MockProfileCreationProxy__factory } from "./factories/MockProfileCreationProxy__factory";
 export { MockReferenceModule__factory } from "./factories/MockReferenceModule__factory";
+export { SubfluidFollowModule__factory } from "./factories/SubfluidFollowModule__factory";
 export { FollowNFTProxy__factory } from "./factories/FollowNFTProxy__factory";
 export { TransparentUpgradeableProxy__factory } from "./factories/TransparentUpgradeableProxy__factory";
