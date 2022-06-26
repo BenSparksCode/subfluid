@@ -21,7 +21,9 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
   contractName: "SubfluidFollowModule";
   functions: {
     "DAI()": FunctionFragment;
+    "DAIx()": FunctionFragment;
     "HUB()": FunctionFragment;
+    "SUPERFLUID()": FunctionFragment;
     "followModuleTransferHook(uint256,address,address,uint256)": FunctionFragment;
     "initializeFollowModule(uint256,bytes)": FunctionFragment;
     "isFollowing(uint256,address,uint256)": FunctionFragment;
@@ -29,7 +31,12 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
   };
 
   encodeFunctionData(functionFragment: "DAI", values?: undefined): string;
+  encodeFunctionData(functionFragment: "DAIx", values?: undefined): string;
   encodeFunctionData(functionFragment: "HUB", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "SUPERFLUID",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "followModuleTransferHook",
     values: [BigNumberish, string, string, BigNumberish]
@@ -48,7 +55,9 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
   ): string;
 
   decodeFunctionResult(functionFragment: "DAI", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "DAIx", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "HUB", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "SUPERFLUID", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "followModuleTransferHook",
     data: BytesLike
@@ -84,7 +93,7 @@ export type SubfluidFollowEventFilter = TypedEventFilter<SubfluidFollowEvent>;
 
 export type SubfluidFollowInitializedEvent = TypedEvent<
   [BigNumber, BigNumber],
-  { profileId: BigNumber; followCost: BigNumber }
+  { profileId: BigNumber; subscribeRate: BigNumber }
 >;
 
 export type SubfluidFollowInitializedEventFilter =
@@ -120,7 +129,11 @@ export interface SubfluidFollowModule extends BaseContract {
   functions: {
     DAI(overrides?: CallOverrides): Promise<[string]>;
 
+    DAIx(overrides?: CallOverrides): Promise<[string]>;
+
     HUB(overrides?: CallOverrides): Promise<[string]>;
+
+    SUPERFLUID(overrides?: CallOverrides): Promise<[string]>;
 
     followModuleTransferHook(
       profileId: BigNumberish,
@@ -153,7 +166,11 @@ export interface SubfluidFollowModule extends BaseContract {
 
   DAI(overrides?: CallOverrides): Promise<string>;
 
+  DAIx(overrides?: CallOverrides): Promise<string>;
+
   HUB(overrides?: CallOverrides): Promise<string>;
+
+  SUPERFLUID(overrides?: CallOverrides): Promise<string>;
 
   followModuleTransferHook(
     profileId: BigNumberish,
@@ -186,7 +203,11 @@ export interface SubfluidFollowModule extends BaseContract {
   callStatic: {
     DAI(overrides?: CallOverrides): Promise<string>;
 
+    DAIx(overrides?: CallOverrides): Promise<string>;
+
     HUB(overrides?: CallOverrides): Promise<string>;
+
+    SUPERFLUID(overrides?: CallOverrides): Promise<string>;
 
     followModuleTransferHook(
       profileId: BigNumberish,
@@ -229,18 +250,22 @@ export interface SubfluidFollowModule extends BaseContract {
 
     "SubfluidFollowInitialized(uint256,uint256)"(
       profileId?: BigNumberish | null,
-      followCost?: null
+      subscribeRate?: null
     ): SubfluidFollowInitializedEventFilter;
     SubfluidFollowInitialized(
       profileId?: BigNumberish | null,
-      followCost?: null
+      subscribeRate?: null
     ): SubfluidFollowInitializedEventFilter;
   };
 
   estimateGas: {
     DAI(overrides?: CallOverrides): Promise<BigNumber>;
 
+    DAIx(overrides?: CallOverrides): Promise<BigNumber>;
+
     HUB(overrides?: CallOverrides): Promise<BigNumber>;
+
+    SUPERFLUID(overrides?: CallOverrides): Promise<BigNumber>;
 
     followModuleTransferHook(
       profileId: BigNumberish,
@@ -274,7 +299,11 @@ export interface SubfluidFollowModule extends BaseContract {
   populateTransaction: {
     DAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    DAIx(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     HUB(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    SUPERFLUID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     followModuleTransferHook(
       profileId: BigNumberish,
