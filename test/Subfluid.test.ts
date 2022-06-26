@@ -19,8 +19,16 @@ describe("Diamond Tests", () => {
     it("Test 1", async () => {
       // TODO
 
-      const SubfluidFactory = await ethers.getContractFactory();
-      const Subfluid = await SubfluidFactory.deploy();
+      const SubfluidFactory = await ethers.getContractFactory(
+        "SubfluidFollowModule"
+      );
+      const Subfluid = await SubfluidFactory.deploy(
+        constants.POLYGON.LENS.HUB,
+        constants.POLYGON.SUPERFLUID.HOST,
+        constants.POLYGON.TOKENS.DAI,
+        constants.POLYGON.SUPERFLUID.DAIx,
+        true
+      );
     });
   });
 });
