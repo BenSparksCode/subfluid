@@ -42,6 +42,7 @@ describe("Tests", () => {
       const Subfluid = await SubfluidFactory.deploy(
         constants.POLYGON.LENS.HUB,
         constants.POLYGON.SUPERFLUID.HOST,
+        constants.POLYGON.SUPERFLUID.CFA,
         constants.POLYGON.TOKENS.DAI,
         constants.POLYGON.SUPERFLUID.DAIx,
         true
@@ -71,6 +72,7 @@ describe("Tests", () => {
 
       // Approve Subfluid module to spend DAIx
       await DAIx.connect(alice).approve(Subfluid.address, daiAmount);
+      await DAIx.connect(alice).approve(owner.address, daiAmount);
 
       // Owner sets up follow subscription cost = 5 wei per second
       // Owner takes profileID = 1

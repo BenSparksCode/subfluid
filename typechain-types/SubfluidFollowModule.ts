@@ -20,6 +20,7 @@ import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 export interface SubfluidFollowModuleInterface extends utils.Interface {
   contractName: "SubfluidFollowModule";
   functions: {
+    "CFA()": FunctionFragment;
     "DAI()": FunctionFragment;
     "DAIx()": FunctionFragment;
     "HUB()": FunctionFragment;
@@ -30,6 +31,7 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
     "processFollow(address,uint256,bytes)": FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: "CFA", values?: undefined): string;
   encodeFunctionData(functionFragment: "DAI", values?: undefined): string;
   encodeFunctionData(functionFragment: "DAIx", values?: undefined): string;
   encodeFunctionData(functionFragment: "HUB", values?: undefined): string;
@@ -54,6 +56,7 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
     values: [string, BigNumberish, BytesLike]
   ): string;
 
+  decodeFunctionResult(functionFragment: "CFA", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "DAI", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "DAIx", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "HUB", data: BytesLike): Result;
@@ -127,6 +130,8 @@ export interface SubfluidFollowModule extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    CFA(overrides?: CallOverrides): Promise<[string]>;
+
     DAI(overrides?: CallOverrides): Promise<[string]>;
 
     DAIx(overrides?: CallOverrides): Promise<[string]>;
@@ -163,6 +168,8 @@ export interface SubfluidFollowModule extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  CFA(overrides?: CallOverrides): Promise<string>;
 
   DAI(overrides?: CallOverrides): Promise<string>;
 
@@ -201,6 +208,8 @@ export interface SubfluidFollowModule extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    CFA(overrides?: CallOverrides): Promise<string>;
+
     DAI(overrides?: CallOverrides): Promise<string>;
 
     DAIx(overrides?: CallOverrides): Promise<string>;
@@ -261,6 +270,8 @@ export interface SubfluidFollowModule extends BaseContract {
   };
 
   estimateGas: {
+    CFA(overrides?: CallOverrides): Promise<BigNumber>;
+
     DAI(overrides?: CallOverrides): Promise<BigNumber>;
 
     DAIx(overrides?: CallOverrides): Promise<BigNumber>;
@@ -299,6 +310,8 @@ export interface SubfluidFollowModule extends BaseContract {
   };
 
   populateTransaction: {
+    CFA(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     DAI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     DAIx(overrides?: CallOverrides): Promise<PopulatedTransaction>;

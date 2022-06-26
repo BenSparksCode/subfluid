@@ -7,6 +7,7 @@ import {FollowValidationModuleBase} from "./core/modules/FollowValidationModuleB
 
 // Superfluid
 import {ISuperfluid} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperfluid.sol";
+import {ISuperToken} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol";
 import {IConstantFlowAgreementV1} from "@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
 // Extra
@@ -19,7 +20,8 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
     }
 
     ISuperfluid public immutable SUPERFLUID;
-    IConstantFlowAgreementV1 public immutable DAIx; // only DAIx supported in PoC
+    IConstantFlowAgreementV1 public immutable CFA;
+    ISuperToken public immutable DAIx; // only DAIx supported in PoC
     ERC20 public immutable DAI;
 
     bool private testMode;
@@ -33,11 +35,13 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
     constructor(
         address _lensHub,
         ISuperfluid _superfluid,
+        IConstantFlowAgreementV1 _cfa,
         ERC20 _dai,
-        IConstantFlowAgreementV1 _daix,
+        ISuperToken _daix,
         bool _testMode
     ) ModuleBase(_lensHub) {
         SUPERFLUID = _superfluid;
+        CFA = _cfa;
         DAI = _dai;
         DAIx = _daix;
 
@@ -76,9 +80,9 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
         int96 _subscribeRate
     ) internal {
         SUPERFLUID.callAgreement(
-            DAIx,
+            CFA,
             abi.encodeWithSelector(
-                DAIx.createFlowByOperator.selector,
+                CFA.createFlowByOperator.selector,
                 DAIx,
                 _payer,
                 _recipient,
