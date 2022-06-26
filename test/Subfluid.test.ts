@@ -55,6 +55,7 @@ describe("Tests", () => {
         daiAmount
       );
 
+      console.log("Alice has DAI but no DAIx");
       await logBalances(alice.address);
 
       // Alice converts DAI to DAIx
@@ -63,7 +64,10 @@ describe("Tests", () => {
         daiAmount
       );
 
-      // await DAIx.connect(alice).selfMint(alice.address, daiAmount, "0x");
+      await DAIx.connect(alice).upgrade(daiAmount);
+
+      console.log("Alice's DAI has been upgraded to DAIx");
+      await logBalances(alice.address);
 
       // Approve Subfluid module to spend DAIx
       await DAIx.connect(alice).approve(Subfluid.address, daiAmount);
