@@ -6,6 +6,7 @@ import { fundAccountWithTokens, logBalances } from "./helpers.test";
 
 import ERC20_ABI from "../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json";
 import SUPERTOKEN_ABI from "../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol/ISuperToken.json";
+import SUPERFLUID_CFA_ABI from "../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol/IConstantFlowAgreementV1.json";
 // import DAIx_ABI from "../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
 describe("Tests", () => {
@@ -15,6 +16,12 @@ describe("Tests", () => {
   let Contract: Contract;
 
   const abiCoder = ethers.utils.defaultAbiCoder;
+
+  const CFA = new ethers.Contract(
+    constants.POLYGON.SUPERFLUID.CFA,
+    SUPERFLUID_CFA_ABI.abi,
+    ethers.provider
+  );
 
   const DAIx = new ethers.Contract(
     constants.POLYGON.SUPERFLUID.DAIx,
@@ -73,6 +80,15 @@ describe("Tests", () => {
       // Approve Subfluid module to spend DAIx
       await DAIx.connect(alice).approve(Subfluid.address, daiAmount);
       await DAIx.connect(alice).approve(owner.address, daiAmount);
+
+      // Authorizing Subfluid to create payment streams between EOAs
+      // NOTE: BREAKS HERE ON AUTH
+      await CFA.connect(alice).authorizeFlowOperatorWithFullControl(
+        constants.POLYGON.SUPERFLUID.DAIx,
+        alice.address,
+        Subfluid.address
+        // "0x"
+      );
 
       // Owner sets up follow subscription cost = 5 wei per second
       // Owner takes profileID = 1
