@@ -68,11 +68,9 @@ describe("Tests", () => {
       // Approve Subfluid module to spend DAIx
       await DAIx.connect(alice).approve(Subfluid.address, daiAmount);
 
-      // Owner sets up follow subscription cost
+      // Owner sets up follow subscription cost = 5 wei per second
       // Owner takes profileID = 1
-
       const data = abiCoder.encode(["uint256", "address"], [5, owner.address]);
-
       await Subfluid.connect(owner).initializeFollowModule(1, data);
 
       // Alice follows Owner (id = 1)
