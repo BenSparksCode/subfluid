@@ -1,3 +1,4 @@
+// import { AbiCoder } from '@ethersproject/contracts/node_modules/@ethersproject/abi';
 import { Contract } from "@ethersproject/contracts";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers, expect, constants, hre } from "./constants.test";
@@ -6,11 +7,13 @@ import { fundAccountWithTokens, logBalances } from "./helpers.test";
 import ERC20_ABI from "../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json";
 // import DAIx_ABI from "../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
-describe("Diamond Tests", () => {
+describe("Tests", () => {
   let owner: SignerWithAddress, alice: SignerWithAddress;
 
   let ContractFactory: Contract;
   let Contract: Contract;
+
+  const abiCoder = ethers.utils.defaultAbiCoder;
 
   const DAIx = new ethers.Contract(
     constants.POLYGON.SUPERFLUID.DAIx,
@@ -51,6 +54,23 @@ describe("Diamond Tests", () => {
 
       // Approve Subfluid module to spend DAIx
       await DAIx.connect(alice).approve(Subfluid.address, daiAmount);
+
+      // Owner sets up follow subscription cost
+      // Owner takes profileID = 1
+      const initFollowData = { subscribeRate: 5, recipient: owner.address };
+      // const initFollowData = ["5", owner.address];
+
+      const data = abiCoder.encode(["uint256", "address"], [5, owner.address]);
+
+      // const data = await Subfluid.interface.encodeFunctionData(
+      //   "initializeFollowModule",
+      //   5,
+      //   owner.address
+      // );
+
+      console.log(data);
+
+      await Subfluid.connect(owner).initializeFollowModule(1, data);
     });
   });
 });
