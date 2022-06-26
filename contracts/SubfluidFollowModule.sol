@@ -22,23 +22,31 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
     IConstantFlowAgreementV1 public immutable DAIx; // only DAIx supported in PoC
     ERC20 public immutable DAI;
 
+    bool private testMode;
+    address private lensHub;
+
     mapping(uint256 => ProfileData) internal dataByProfile; // profileID => ProfileData
 
     event SubfluidFollowInitialized(uint256 indexed profileId, address indexed recipientAddress, uint256 subscribeRate);
     event SubfluidFollow(address indexed follower, address indexed recipient);
 
     constructor(
-        address hub,
+        address _lensHub,
         ISuperfluid _superfluid,
         ERC20 _dai,
-        IConstantFlowAgreementV1 _daix
-    ) ModuleBase(hub) {
+        IConstantFlowAgreementV1 _daix,
+        bool _testMode
+    ) ModuleBase(_lensHub) {
         SUPERFLUID = _superfluid;
         DAI = _dai;
         DAIx = _daix;
+
+        // For testing
+        testMode = _testMode;
+        lensHub = _lensHub;
     }
 
-    function initializeFollowModule(uint256 profileId, bytes calldata data) public onlyHub returns (bytes memory) {
+    function initializeFollowModule(uint256 profileId, bytes calldata data) public onlyLensHub returns (bytes memory) {
         // Extract user-specified follow cost from data.
         (uint256 _subscribeRate, address _recipientAddr) = abi.decode(data, (uint256, address));
 
@@ -57,15 +65,9 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
         uint256 profileId,
         bytes calldata data
     ) public {
-        // TODO derive from profileID
-        address recipient = address(this);
+        _createPaymentStream(follower, dataByProfile[profileId].recipient, dataByProfile[profileId].subscribeRate);
 
-        // Transfers preset amount of DAI from follower to recipient
-        // require(DAI.transferFrom(follower, recipient, dataByProfile[profileId]), "SUBFLUID: PAYMENT FAILED");
-
-        _createPaymentStream(follower, recipient, dataByProfile[profileId].subscribeRate);
-
-        emit SubfluidFollow(follower, recipient);
+        emit SubfluidFollow(follower, dataByProfile[profileId].recipient);
     }
 
     function _createPaymentStream(
@@ -101,4 +103,9 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
         address follower,
         uint256 followNFTTokenId
     ) public view returns (bool) {}
+
+    modifier onlyLensHub() {
+        if (!testMode) require(msg.sender == lensHub, "SUBFLUID: NOT LENS HUB");
+        _;
+    }
 }

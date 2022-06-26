@@ -42,13 +42,12 @@ const loadConfig = () => {
       hardhat: {
         allowUnlimitedContractSize: true,
         // gasPrice: 0,
-        // forking: {
-        //   url:
-        //     "https://polygon-mainnet.g.alchemy.com/v2/" +
-        //     process.env.ALCHEMY_API,
-        //   blockNumber: 28156000,
-        //   // blockNumber: 27927400,
-        // },
+        forking: {
+          url:
+            "https://polygon-mainnet.g.alchemy.com/v2/" +
+            process.env.ALCHEMY_API,
+          blockNumber: 30000000,
+        },
         accounts: {
           accountsBalance: "1000000000000000000000000",
         },

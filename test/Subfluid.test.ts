@@ -18,6 +18,9 @@ describe("Diamond Tests", () => {
   describe.only("Tests", () => {
     it("Test 1", async () => {
       // TODO
+
+      const SubfluidFactory = await ethers.getContractFactory();
+      const Subfluid = await SubfluidFactory.deploy();
     });
   });
 });
