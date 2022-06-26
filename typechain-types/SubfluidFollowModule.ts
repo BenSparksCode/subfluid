@@ -77,7 +77,7 @@ export interface SubfluidFollowModuleInterface extends utils.Interface {
 
   events: {
     "SubfluidFollow(address,address)": EventFragment;
-    "SubfluidFollowInitialized(uint256,uint256)": EventFragment;
+    "SubfluidFollowInitialized(uint256,address,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "SubfluidFollow"): EventFragment;
@@ -92,8 +92,8 @@ export type SubfluidFollowEvent = TypedEvent<
 export type SubfluidFollowEventFilter = TypedEventFilter<SubfluidFollowEvent>;
 
 export type SubfluidFollowInitializedEvent = TypedEvent<
-  [BigNumber, BigNumber],
-  { profileId: BigNumber; subscribeRate: BigNumber }
+  [BigNumber, string, BigNumber],
+  { profileId: BigNumber; recipientAddress: string; subscribeRate: BigNumber }
 >;
 
 export type SubfluidFollowInitializedEventFilter =
@@ -248,12 +248,14 @@ export interface SubfluidFollowModule extends BaseContract {
       recipient?: string | null
     ): SubfluidFollowEventFilter;
 
-    "SubfluidFollowInitialized(uint256,uint256)"(
+    "SubfluidFollowInitialized(uint256,address,uint256)"(
       profileId?: BigNumberish | null,
+      recipientAddress?: string | null,
       subscribeRate?: null
     ): SubfluidFollowInitializedEventFilter;
     SubfluidFollowInitialized(
       profileId?: BigNumberish | null,
+      recipientAddress?: string | null,
       subscribeRate?: null
     ): SubfluidFollowInitializedEventFilter;
   };

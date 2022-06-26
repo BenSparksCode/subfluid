@@ -13,13 +13,18 @@ import {IConstantFlowAgreementV1} from "@superfluid-finance/ethereum-contracts/c
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
+    struct ProfileData {
+        int96 subscribeRate;
+        address recipient;
+    }
+
     ISuperfluid public immutable SUPERFLUID;
     IConstantFlowAgreementV1 public immutable DAIx; // only DAIx supported in PoC
     ERC20 public immutable DAI;
 
-    mapping(uint256 => uint256) internal subscribeRates; // profileID => costToFollow
+    mapping(uint256 => ProfileData) internal dataByProfile; // profileID => ProfileData
 
-    event SubfluidFollowInitialized(uint256 indexed profileId, uint256 subscribeRate);
+    event SubfluidFollowInitialized(uint256 indexed profileId, address indexed recipientAddress, uint256 subscribeRate);
     event SubfluidFollow(address indexed follower, address indexed recipient);
 
     constructor(
@@ -35,11 +40,14 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
 
     function initializeFollowModule(uint256 profileId, bytes calldata data) public onlyHub returns (bytes memory) {
         // Extract user-specified follow cost from data.
-        uint256 subscribeRate = abi.decode(data, (uint256));
+        (uint256 _subscribeRate, address _recipientAddr) = abi.decode(data, (uint256, address));
 
-        subscribeRates[profileId] = subscribeRate;
+        dataByProfile[profileId] = ProfileData({
+            subscribeRate: int96(int256(_subscribeRate)),
+            recipient: _recipientAddr
+        });
 
-        emit SubfluidFollowInitialized(profileId, subscribeRate);
+        emit SubfluidFollowInitialized(profileId, _recipientAddr, _subscribeRate);
 
         return data;
     }
@@ -53,9 +61,9 @@ contract SubfluidFollowModule is IFollowModule, FollowValidationModuleBase {
         address recipient = address(this);
 
         // Transfers preset amount of DAI from follower to recipient
-        require(DAI.transferFrom(follower, recipient, subscribeRates[profileId]), "SUBFLUID: PAYMENT FAILED");
+        // require(DAI.transferFrom(follower, recipient, dataByProfile[profileId]), "SUBFLUID: PAYMENT FAILED");
 
-        _createPaymentStream(follower, recipient, int96(int256(subscribeRates[profileId])));
+        _createPaymentStream(follower, recipient, dataByProfile[profileId].subscribeRate);
 
         emit SubfluidFollow(follower, recipient);
     }
