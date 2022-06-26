@@ -5,6 +5,7 @@ import { ethers, expect, constants, hre } from "./constants.test";
 import { fundAccountWithTokens, logBalances } from "./helpers.test";
 
 import ERC20_ABI from "../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json";
+import SUPERTOKEN_ABI from "../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/superfluid/ISuperToken.sol/ISuperToken.json";
 // import DAIx_ABI from "../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
 describe("Tests", () => {
@@ -17,6 +18,12 @@ describe("Tests", () => {
 
   const DAIx = new ethers.Contract(
     constants.POLYGON.SUPERFLUID.DAIx,
+    SUPERTOKEN_ABI.abi,
+    ethers.provider
+  );
+
+  const DAI = new ethers.Contract(
+    constants.POLYGON.TOKENS.DAI,
     ERC20_ABI.abi,
     ethers.provider
   );
@@ -51,26 +58,25 @@ describe("Tests", () => {
       await logBalances(alice.address);
 
       // Alice converts DAI to DAIx
+      await DAI.connect(alice).approve(
+        constants.POLYGON.SUPERFLUID.DAIx,
+        daiAmount
+      );
+
+      // await DAIx.connect(alice).selfMint(alice.address, daiAmount, "0x");
 
       // Approve Subfluid module to spend DAIx
       await DAIx.connect(alice).approve(Subfluid.address, daiAmount);
 
       // Owner sets up follow subscription cost
       // Owner takes profileID = 1
-      const initFollowData = { subscribeRate: 5, recipient: owner.address };
-      // const initFollowData = ["5", owner.address];
 
       const data = abiCoder.encode(["uint256", "address"], [5, owner.address]);
 
-      // const data = await Subfluid.interface.encodeFunctionData(
-      //   "initializeFollowModule",
-      //   5,
-      //   owner.address
-      // );
-
-      console.log(data);
-
       await Subfluid.connect(owner).initializeFollowModule(1, data);
+
+      // Alice follows Owner (id = 1)
+      await Subfluid.connect(alice).processFollow(alice.address, 1, "0x");
     });
   });
 });
