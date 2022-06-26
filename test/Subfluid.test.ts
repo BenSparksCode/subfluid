@@ -1,9 +1,10 @@
 import { Contract } from "@ethersproject/contracts";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ethers, expect, constants, hre } from "./constants.test";
-import { deployDiamond } from "./helpers.test";
+import { fundAccountWithTokens, logBalances } from "./helpers.test";
 
-// import ERC20_ABI from "../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json";
+import ERC20_ABI from "../artifacts/@openzeppelin/contracts/token/ERC20/IERC20.sol/IERC20.json";
+// import DAIx_ABI from "../artifacts/@superfluid-finance/ethereum-contracts/contracts/interfaces/agreements/IConstantFlowAgreementV1.sol";
 
 describe("Diamond Tests", () => {
   let owner: SignerWithAddress, alice: SignerWithAddress;
@@ -11,13 +12,19 @@ describe("Diamond Tests", () => {
   let ContractFactory: Contract;
   let Contract: Contract;
 
+  const DAIx = new ethers.Contract(
+    constants.POLYGON.SUPERFLUID.DAIx,
+    ERC20_ABI.abi,
+    ethers.provider
+  );
+
   beforeEach(async () => {
     [owner, alice] = await ethers.getSigners();
   });
 
-  describe.only("Tests", () => {
-    it("Test 1", async () => {
-      // TODO
+  describe.only("Subfluid Tests", () => {
+    it("Subfluid creates payment stream on follow", async () => {
+      const daiAmount = ethers.utils.parseUnits("1000");
 
       const SubfluidFactory = await ethers.getContractFactory(
         "SubfluidFollowModule"
@@ -29,6 +36,21 @@ describe("Diamond Tests", () => {
         constants.POLYGON.SUPERFLUID.DAIx,
         true
       );
+
+      // Gib Alice DAI
+      await fundAccountWithTokens(
+        constants.POLYGON.ACCOUNTS.DAI_WHALE,
+        alice.address,
+        constants.POLYGON.TOKENS.DAI,
+        daiAmount
+      );
+
+      await logBalances(alice.address);
+
+      // Alice converts DAI to DAIx
+
+      // Approve Subfluid module to spend DAIx
+      await DAIx.connect(alice).approve(Subfluid.address, daiAmount);
     });
   });
 });

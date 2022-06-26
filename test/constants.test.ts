@@ -3,13 +3,6 @@ export const { ethers } = require("hardhat");
 export const hre = require("hardhat");
 
 export const constants = {
-  DIAMOND: {
-    CUT_ACTIONS: {
-      ADD: 0,
-      REPLACE: 1,
-      REMOVE: 2,
-    },
-  },
   USERS: {
     ALICE: {
       PRIVATE_KEY:
